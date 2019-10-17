@@ -41,3 +41,13 @@ body {
     border: 1px solid grey;
     box-sizing: border-box;
 }
+
+#ball {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+}
