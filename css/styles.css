@@ -31,3 +31,13 @@ body {
     border-radius: 10px;
     background-color: navajowhite;
 }
+
+.brick {
+    display: block;
+    float: left;
+    width: 100px;
+    height: 30px;
+    background-color: #cb4154;
+    border: 1px solid grey;
+    box-sizing: border-box;
+}

@@ -1,5 +1,5 @@
 /**
- * A constructor to create paddle
+ * A class template to create paddles
  * @param id - id of the dom element
  * @param x - x cordinate of the paddle
  * @param minX - minimum possible value of x
@@ -62,3 +62,41 @@ document.addEventListener('keydown', function(e) {
   }
   paddle.render();
 });
+
+/**
+ * A class template to create bricks
+ * @param id - id of the dom element
+ * @constructor
+ */
+function Brick(id) {
+  const _element = document.getElementById(id);
+
+  /**
+   * Function to simulate the smash of the break
+   */
+  this.smash = function() {
+    _element.style.visibility = 'hidden';
+  }
+}
+
+/**
+ * Add bricks of size 10*10
+ */
+bricks = addBricks(10, 10);
+
+/**
+ * Create new brick instances by associating with dom elements
+ * @param m - horizontal dimensions
+ * @param n - vertical dimensions
+ */
+function addBricks(m, n) {
+  const bricks = [];
+  for (let i = 0; i < m; i++) {
+    const bricksInTheRow = [];
+    for (let j = 0; j < n; j++) {
+      bricksInTheRow.push(new Brick('brick-' + i.toString() + j.toString()));
+    }
+    bricks.push(bricksInTheRow);
+  }
+  return bricks;
+}
