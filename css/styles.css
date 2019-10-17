@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    background-color: firebrick;
+}
+
+.game-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid burlywood;
+    width: 1000px;
+    height: 600px;
+    background-color: mediumslateblue;
+}
