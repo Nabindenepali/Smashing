@@ -67,7 +67,7 @@ function Paddle(id, x, minX, maxX, speed) {
 /**
  * Create a new paddle with desired properties and render
  */
-paddle = new Paddle('paddle', 451, 1, 901, 10);
+paddle = new Paddle('paddle', 451, 1, 901, 50);
 paddle.render();
 
 /**
@@ -90,12 +90,21 @@ document.addEventListener('keydown', function(e) {
  */
 function Brick(id) {
   const _element = document.getElementById(id);
+  let _broken = false;
 
   /**
    * Function to simulate the smash of the break
    */
   this.smash = function() {
+    _broken = true;
     _element.style.visibility = 'hidden';
+  };
+
+  /***
+   * Function to check if the brick has been broken
+   */
+  this.broken = function() {
+    return _broken === true;
   }
 }
 
@@ -167,6 +176,13 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
   };
 
   /**
+   * Change velocity to simulate reflection along x-axis
+   */
+  this.reflectX = function() {
+    _velocity.x = -_velocity.x;
+  };
+
+  /**
    * Change velocity to simulate reflection along y-axis
    */
   this.reflectY = function() {
@@ -189,6 +205,13 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
   };
 
   /**
+   * Get x cordinates of the left of the ball
+   */
+  this.getX = function() {
+    return _x;
+  };
+
+  /**
    * Get y cordinates of the bottom of the ball
    */
   this.getY = function() {
@@ -207,7 +230,7 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
    */
   this.dropped = function() {
     return _y < 1;
-  }
+  };
 }
 
 /**
@@ -239,7 +262,47 @@ function game() {
     if (ball.dropped()) {
       clearInterval(intervalId);
     }
+    const bricksInContact = getBricksInContact();
+    if (bricksInContact.length > 0) {
+      for (const brick of bricksInContact) {
+        brick.smash();
+      }
+      ball.reflectX();
+      ball.reflectY();
+    }
   }, 10);
+}
+
+/***
+ * Get the bricks that are currently in contact with the ball
+ */
+function getBricksInContact() {
+  // The ball is in the brick region only above 281px height
+  if (ball.getY() < 281) {
+    return [];
+  }
+  const is = [Math.floor((601-ball.getY())/30), Math.floor((601-(ball.getY()+20))/30)].filter(unique).filter(j => j>=0 && j<=9);
+  const js = [Math.floor((ball.getX()-1)/100), Math.floor((ball.getX()+20-1)/100)].filter(unique);
+  const breakableBricks = [];
+  for (const i of is) {
+    for (const j of js) {
+      const brick = bricks[i][j];
+      if (!brick.broken()) {
+        breakableBricks.push(bricks[i][j])
+      }
+    }
+  }
+  return breakableBricks;
+}
+
+/***
+ * A callback to get unique values in an array
+ * @param value
+ * @param index
+ * @param self
+ */
+function unique(value, index, self) {
+  return self.indexOf(value) === index;
 }
 
 
