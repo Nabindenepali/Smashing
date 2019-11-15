@@ -62,6 +62,25 @@ function Paddle(id, x, minX, maxX, speed) {
   this.strikesBall = function(ball) {
     return ball.getXCenter() > _x && ball.getXCenter() < _x + 100 && ball.getY() === 11;
   };
+
+  /**
+   * Function to reflect the ball on collision between paddle and ball
+   * @param ball
+   */
+  this.reflectBall = function(ball) {
+    const ballCenter = {
+      x: ball.getXCenter(),
+      y: ball.getYCenter()
+    };
+    const paddleCenter = {
+      x: _x + 50,
+      y: 16
+    };
+    const angle = angleBetweenPoints(paddleCenter, ballCenter);
+    console.log('Angle: ', angle);
+    ball.reflectX(angle);
+    ball.reflectY(angle);
+  };
 }
 
 /**
@@ -157,6 +176,8 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
    */
   this.move = function() {
     _x += _velocity.x;
+    console.log('Velocity: ', _velocity.x, _velocity.y);
+    console.log('Point: ', _x, _y);
     if (_x < _minX) { // Prevent move to the left if the ball is already on the left edge
       _x = _minX;
       _velocity.x = -_velocity.x;
@@ -178,15 +199,23 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
   /**
    * Change velocity to simulate reflection along x-axis
    */
-  this.reflectX = function() {
-    _velocity.x = -_velocity.x;
+  this.reflectX = function(angle = null) {
+    if (!angle) {
+      _velocity.x = -_velocity.x;
+      return;
+    }
+    _velocity.x = -_velocity.x*(1-Math.sin(angle));
   };
 
   /**
    * Change velocity to simulate reflection along y-axis
    */
-  this.reflectY = function() {
-    _velocity.y = -_velocity.y;
+  this.reflectY = function(angle = null) {
+    if (!angle) {
+      _velocity.y = -_velocity.y;
+      return;
+    }
+    _velocity.y = -_velocity.y*(1-Math.cos(angle));
   };
 
   /**
@@ -202,6 +231,13 @@ function Ball(id, x, y, minX, maxX, minY, maxY, velocity) {
    */
   this.getXCenter = function() {
     return _x + 10;
+  };
+
+  /**
+   * Get y cordinates of the center of the ball
+   */
+  this.getYCenter = function() {
+    return _y + 10;
   };
 
   /**
@@ -257,7 +293,7 @@ function game() {
     ball.move();
     ball.render();
     if (paddle.strikesBall(ball)) {
-      ball.reflectY();
+      paddle.reflectBall(ball);
     }
     if (ball.dropped()) {
       clearInterval(intervalId);
@@ -303,6 +339,15 @@ function getBricksInContact() {
  */
 function unique(value, index, self) {
   return self.indexOf(value) === index;
+}
+
+/***
+ * Calculate the angle between two points w.r.t x-axis
+ * @param p1
+ * @param p2
+ */
+function angleBetweenPoints(p1, p2) {
+  return Math.atan((p2.y - p1.y)/(p2.x - p1.x));
 }
 
 
